@@ -26,6 +26,14 @@ function getAllowedOrigins() {
   return [...origins];
 }
 
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  if (origin === LOCAL_CLIENT_URL) return true;
+  if (origin === DEFAULT_CLIENT_URL) return true;
+  if (origin.endsWith('.netlify.app')) return true;
+  return getAllowedOrigins().includes(normalizeUrl(origin));
+}
+
 function getServerPublicUrl(req) {
   const forwardedProto = req.headers['x-forwarded-proto'];
   const protocol = Array.isArray(forwardedProto) ? forwardedProto[0] : forwardedProto || req.protocol;
@@ -36,5 +44,5 @@ module.exports = {
   getAllowedOrigins,
   getClientUrl,
   getServerPublicUrl,
+  isAllowedOrigin,
 };
-

@@ -17,6 +17,7 @@ const uploadRoutes = require('./routes/uploadRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const errorHandler = require('./middleware/errorMiddleware');
 const { generalLimiter } = require('./middleware/rateLimitMiddleware');
+const { getAllowedOrigins } = require('./utils/urls');
 
 const app = express();
 
@@ -27,7 +28,11 @@ app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (getAllowedOrigins().includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
     credentials: true,
   })
 );

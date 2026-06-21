@@ -1,5 +1,6 @@
 const stripe = require('../config/stripe');
 const User = require('../models/User');
+const { getClientUrl } = require('../utils/urls');
 
 exports.createCheckoutSession = async (req, res, next) => {
   try {
@@ -18,8 +19,8 @@ exports.createCheckoutSession = async (req, res, next) => {
       mode: 'subscription',
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${process.env.CLIENT_URL}/agent/dashboard?subscribed=true`,
-      cancel_url: `${process.env.CLIENT_URL}/become-agent?canceled=true`,
+      success_url: `${getClientUrl()}/agent/dashboard?subscribed=true`,
+      cancel_url: `${getClientUrl()}/become-agent?canceled=true`,
       client_reference_id: req.user._id.toString(),
     });
 
@@ -36,7 +37,7 @@ exports.createPortalSession = async (req, res, next) => {
 
     const session = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${process.env.CLIENT_URL}/agent/dashboard`,
+      return_url: `${getClientUrl()}/agent/dashboard`,
     });
 
     res.json({ url: session.url });

@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 const sendEmail = require('../utils/sendEmail'); // used by forgotPassword
+const { getClientUrl } = require('../utils/urls');
 
 const signToken = (res, user) => generateToken(res, user._id, user.role);
 
@@ -106,7 +107,7 @@ exports.forgotPassword = async (req, res, next) => {
       user.passwordResetExpires = Date.now() + 60 * 60 * 1000;
       await user.save({ validateBeforeSave: false });
 
-      const resetUrl = `${process.env.CLIENT_URL}/reset-password/${rawToken}`;
+      const resetUrl = `${getClientUrl()}/reset-password/${rawToken}`;
 
       try {
         await sendEmail({

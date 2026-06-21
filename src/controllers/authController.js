@@ -3,6 +3,7 @@ const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
 const sendEmail = require('../utils/sendEmail'); // used by forgotPassword
 const { getClientUrl } = require('../utils/urls');
+const { getAuthCookieOptions } = require('../utils/cookies');
 
 const signToken = (res, user) => generateToken(res, user._id, user.role);
 
@@ -68,7 +69,7 @@ exports.login = async (req, res, next) => {
 };
 
 exports.logout = (req, res) => {
-  res.clearCookie('token', { httpOnly: true, sameSite: 'strict', secure: process.env.NODE_ENV === 'production' });
+  res.clearCookie('token', getAuthCookieOptions());
   res.json({ message: 'Logged out' });
 };
 
@@ -147,7 +148,7 @@ exports.resetPassword = async (req, res, next) => {
     user.tokenVersion = (user.tokenVersion || 0) + 1;
     await user.save();
 
-    res.clearCookie('token');
+    res.clearCookie('token', getAuthCookieOptions());
     res.json({ message: 'Password reset successful. Please log in.' });
   } catch (err) {
     next(err);

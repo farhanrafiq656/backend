@@ -6,6 +6,7 @@ node_modules/
 .env.*
 !.env.example
 !.env.sample
+!.env.vercel.example
 
 # Logs and runtime files
 *.log
